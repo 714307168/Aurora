@@ -193,7 +193,54 @@
     spy();
   }
 
-  function init() { enhanceCode(); buildToc(); readProgress(); }
+  // 亮/暗主题切换：localStorage 记录，默认深色（或跟随系统），点击切换
+  function themeToggle() {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    var apply = function (t) {
+      document.documentElement.setAttribute("data-theme", t);
+      btn.textContent = t === "light" ? "☀️" : "🌙";
+      try { localStorage.setItem("aurora-theme", t); } catch (e) {}
+    };
+    var saved = null;
+    try { saved = localStorage.getItem("aurora-theme"); } catch (e) {}
+    var t = saved || (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    apply(t);
+    btn.addEventListener("click", function () {
+      var cur = document.documentElement.getAttribute("data-theme");
+      apply(cur === "light" ? "dark" : "light");
+    });
+  }
+
+  // 正文图片：懒加载 + 点击灯箱放大
+  function enhanceImages() {
+    var imgs = document.querySelectorAll(".post-body img");
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      img.setAttribute("loading", "lazy");
+      img.setAttribute("decoding", "async");
+      img.style.cursor = "zoom-in";
+      img.addEventListener("click", function () {
+        openLightbox(this.getAttribute("src") || this.currentSrc);
+      });
+    }
+  }
+  function openLightbox(src) {
+    if (!src) return;
+    var exist = document.querySelector(".aurora-lightbox");
+    if (exist) exist.remove();
+    var box = document.createElement("div");
+    box.className = "aurora-lightbox";
+    var big = document.createElement("img");
+    big.src = src; big.className = "lightbox-img"; big.alt = "";
+    box.appendChild(big);
+    document.body.appendChild(box);
+    var close = function (e) { if (!e.key || e.key === "Escape") box.remove(); };
+    document.addEventListener("keydown", close);
+    box.addEventListener("click", close);
+  }
+
+  function init() { enhanceCode(); buildToc(); readProgress(); themeToggle(); enhanceImages(); }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else { init(); }
