@@ -4,6 +4,12 @@
 
 在线演示：https://www.liuyg.cn
 
+> [!IMPORTANT]
+> **仓库维护规则：任何对主题代码的修改（PHP / CSS / JS / 设置 / 结构），必须在同一次提交里同步更新 `docs/` 对应文档**，否则文档会与代码失准、交接失效。对应关系见 [docs/README.md](docs/README.md) 的「文档同步规则」。
+
+**📚 完整设计与维护文档**：[docs/](docs/README.md)
+（架构 · 设计规范 · 模板说明 · 前端功能 · 主题配置 · 维护指南 · 交接速查）
+
 ## ✦ 特性
 
 - **深色科技感**：深蓝黑渐变底 + 网格光晕 + 霓虹青蓝（`#22d3ee` → `#3b82f6`）渐变主色
@@ -44,7 +50,7 @@ usr/themes/Aurora/
 
 - 友链页需要 [Links Plus 插件](https://github.com/lhl77/Typecho-Plugin-LinksPlus) 支持（`page-links.php` 中输出）
 - 代码高亮使用 [highlight.js](https://highlightjs.org/)（CDN），语言标签与复制由 `aurora.js` 完成
-- 备案号在 `footer.php`，请保留或替换为自己的备案信息
+- 备案号在后台「外观设置 → 页脚备案号」配置（`aurora_beian`），留空不显示
 - 模块图标使用 Unicode 符号，无第三方图标库依赖
 
 ## 📄 License
