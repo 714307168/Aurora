@@ -11,7 +11,7 @@
         'author'   => _t('%s 的文章')
     ), '', ' - '); $this->options->title(); ?></title>
     <link rel="icon" href="<?php $this->options->themeUrl('assets/logo.svg'); ?>" type="image/svg+xml">
-    <link rel="stylesheet" href="<?php echo $this->options->themeUrl('assets/aurora.css'); ?>?v=20260832">
+    <link rel="stylesheet" href="<?php echo $this->options->themeUrl('assets/aurora.css'); ?>?v=20260833">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <meta name="description" content="<?php $this->options->description(); ?>">
     <meta name="keywords" content="<?php $this->options->description(); ?>">

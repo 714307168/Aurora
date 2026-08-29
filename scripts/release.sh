@@ -39,15 +39,18 @@ CHANGED_ASSETS=$(git status --porcelain -- assets/ 2>/dev/null)
 if [ -n "$CHANGED_ASSETS" ]; then
   python3 - "$TODAY" <<'PY'
 import re,sys
-d=sys.argv[1]
-for path,old,new in [("header.php",r'aurora\.css\?v=\d+','aurora.css?v='+d),
-                     ("footer.php",r'aurora\.js\?v=\d+','aurora.js?v='+d)]:
-    s=open(path,encoding='utf-8').read()
-    s2=re.sub(old,new,s)
-    if s2!=s:
-        open(path,'w',encoding='utf-8').write(s2); print(f"  bump {path} → ?v={d}")
+today=int(sys.argv[1]); cur=0
+for p in ("header.php","footer.php"):
+    s=open(p,encoding='utf-8').read()
+    m=re.search(r"\?v=(\d+)",s)
+    if m: cur=max(cur,int(m.group(1)))
+new=max(cur+1,today)
+for p in ("header.php","footer.php"):
+    s=open(p,encoding='utf-8').read()
+    s2=re.sub(r"\?v=\d+","?v="+str(new),s)
+    if s2!=s: open(p,'w',encoding='utf-8').write(s2); print(f"  bump {p} → ?v={new}")
 PY
-  echo "  ✓ 已 bump 版本号至当日 $TODAY"
+  echo "  ✓ 版本号已递增（取 max(当前+1, 今日)）"
 else
   echo "  - 本次未改 assets，跳过版本号"
 fi
