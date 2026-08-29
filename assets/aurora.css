@@ -232,6 +232,27 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
 .post-body .code-copy:hover{color:#67e8f9;border-color:var(--aurora)}
 .post-body .code-copy.ok{color:#fff;background:var(--aurora-grad);border-color:transparent}
 
+/* 阅读进度条（文章页顶部） */
+#read-progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--aurora-grad);z-index:9999;transition:width .08s linear;box-shadow:0 0 10px rgba(34,211,238,.5)}
+
+/* 代码块：行号 + 长代码折叠 */
+.post-body pre{display:flex;flex-wrap:wrap;align-items:stretch;padding:0;overflow:hidden}
+.post-body pre .code-head{flex:0 0 100%;order:-1;margin:0;border-radius:var(--radius) var(--radius) 0 0}
+.post-body pre .line-nums{
+    flex:0 0 auto;order:0;min-width:46px;padding:1.15em 10px 1.15em 0;text-align:right;
+    color:var(--text-3);font-family:var(--mono);font-size:13px;line-height:1.7;
+    border-right:1px solid rgba(255,255,255,.05);user-select:none;background:rgba(255,255,255,.02);
+}
+.post-body pre .line-nums span{display:block}
+.post-body pre code{flex:1 1 auto;order:1;min-width:0;overflow-x:auto;padding:1.15em 1.3em}
+.post-body pre.code-collapsed{max-height:460px;overflow:hidden;position:relative}
+.post-body pre.code-collapsed::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:80px;
+    background:linear-gradient(rgba(13,17,23,0),var(--code-bg));pointer-events:none;
+}
+.post-body .code-fold{margin-left:auto;padding:4px 12px;font-size:12px;font-weight:600;color:#67e8f9;background:var(--bg-2);border:1px solid var(--card-border);border-radius:8px;cursor:pointer;transition:all .2s}
+.post-body .code-fold:hover{color:#fff;border-color:var(--aurora)}
+
 /* 表格 */
 .post-body table{width:100%;margin:1.6em 0;border-collapse:collapse;font-size:15px;overflow:hidden;border-radius:var(--radius);border:1px solid var(--card-border)}
 .post-body th{background:rgba(34,211,238,.08);color:#fff;padding:11px 14px;text-align:left;font-weight:600}

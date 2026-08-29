@@ -1,6 +1,8 @@
 <?php if(!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
 <?php $this->need('header.php'); ?>
 
+<div id="read-progress" aria-hidden="true"></div>
+
 <div class="aurora-container layout">
     <div class="content-pane">
         <article class="aurora-post">

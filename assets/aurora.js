@@ -59,38 +59,87 @@
     var pres = document.querySelectorAll(".post-body pre");
     for (var i = 0; i < pres.length; i++) {
       var pre = pres[i];
-      if (pre.querySelector(".code-head")) continue;
       var code = pre.querySelector("code");
       if (!code) continue;
 
-      var lang = "";
-      var m = (code.className || "").match(/language-([\w+-]+)/);
-      if (m) lang = m[1].toLowerCase();
-      if (!lang) lang = detectLang(code.textContent || "");
+      // 语言标签 + 一键复制（只加一次）
+      if (!pre.querySelector(".code-head")) {
+        var lang = "";
+        var m = (code.className || "").match(/language-([\w+-]+)/);
+        if (m) lang = m[1].toLowerCase();
+        if (!lang) lang = detectLang(code.textContent || "");
+        var head = document.createElement("div");
+        head.className = "code-head";
+        var tag = document.createElement("span");
+        tag.className = "code-lang";
+        tag.textContent = LANG_NAMES[lang] || "代码";
+        var btn = document.createElement("button");
+        btn.className = "code-copy";
+        btn.type = "button";
+        btn.textContent = "复制";
+        (function (codeRef, btnRef) {
+          btnRef.addEventListener("click", function () {
+            var text = (codeRef.textContent || "").replace(/\n$/, "");
+            var done = function () {
+              btnRef.textContent = "已复制";
+              setTimeout(function () { btnRef.textContent = "复制"; }, 1600);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+            } else { fallback(text, done); }
+          });
+        })(code, btn);
+        head.appendChild(tag);
+        head.appendChild(btn);
+        pre.appendChild(head);
+      }
 
-      var head = document.createElement("div");
-      head.className = "code-head";
-      var tag = document.createElement("span");
-      tag.className = "code-lang";
-      tag.textContent = LANG_NAMES[lang] || "代码";
-      var btn = document.createElement("button");
-      btn.className = "code-copy";
-      btn.type = "button";
-      btn.textContent = "复制";
-      btn.addEventListener("click", function () {
-        var text = (code.textContent || "").replace(/\n$/, "");
-        var done = function () {
-          btn.textContent = "已复制";
-          setTimeout(function () { btn.textContent = "复制"; }, 1600);
-        };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
-        } else { fallback(text, done); }
-      });
-      head.appendChild(tag);
-      head.appendChild(btn);
-      pre.appendChild(head);
+      // 行号 + 长代码折叠（只加一次）
+      if (!pre.querySelector(".line-nums")) {
+        var lines = (code.textContent || "").split("\n").length - 1;
+        if (lines < 1) lines = 1;
+        var ln = document.createElement("div");
+        ln.className = "line-nums";
+        for (var n = 1; n <= lines; n++) {
+          var s = document.createElement("span");
+          s.textContent = n;
+          ln.appendChild(s);
+        }
+        pre.insertBefore(ln, code);
+        pre.classList.add("code-lines");
+        if (lines > 18) {
+          pre.classList.add("code-collapsed");
+          var head2 = pre.querySelector(".code-head");
+          if (head2 && !head2.querySelector(".code-fold")) {
+            var fold = document.createElement("button");
+            fold.className = "code-fold";
+            fold.type = "button";
+            fold.textContent = "展开 " + lines + " 行";
+            (function (preRef, foldRef) {
+              foldRef.addEventListener("click", function () {
+                preRef.classList.remove("code-collapsed");
+                foldRef.remove();
+              });
+            })(pre, fold);
+            head2.appendChild(fold);
+          }
+        }
+      }
     }
+  }
+
+  // 阅读进度条（仅文章页有 #read-progress 时）
+  function readProgress() {
+    var bar = document.getElementById("read-progress");
+    if (!bar) return;
+    var update = function () {
+      var doc = document.documentElement;
+      var max = (doc.scrollHeight - window.innerHeight) || 1;
+      var p = Math.min(100, Math.max(0, (window.scrollY / max) * 100));
+      bar.style.width = p + "%";
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    update();
   }
 
   function fallback(text, done) {
@@ -144,7 +193,7 @@
     spy();
   }
 
-  function init() { enhanceCode(); buildToc(); }
+  function init() { enhanceCode(); buildToc(); readProgress(); }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else { init(); }
