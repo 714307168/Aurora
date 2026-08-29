@@ -5,7 +5,7 @@
     <div class="footer-inner">
         <p class="footer-brand"><?php $this->options->title(); ?> <span class="dot">·</span> 技术分享，从热爱开始</p>
         <p class="footer-meta">
-            © <?php echo date('Y'); ?> <a href="<?php $this->options->siteUrl(); ?>" rel="noopener"><?php $this->options->title(); ?></a>. Theme <a href="https://github.com/714307168/Aurora" target="_blank" rel="noopener">Aurora</a>, Made with <span class="heart">♥</span>.
+            © <?php echo date('Y'); ?> <a href="<?php echo $this->options->siteUrl; ?>" rel="noopener"><?php $this->options->title(); ?></a>. Theme <a href="https://github.com/714307168/Aurora" target="_blank" rel="noopener">Aurora</a>, Made with <span class="heart">♥</span>.
         </p>
         <p class="footer-beian"><?php if($this->options->aurora_beian): ?><?php echo $this->options->aurora_beian; ?><?php endif; ?></p>
     </div>

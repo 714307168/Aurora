@@ -6,7 +6,7 @@
         <section class="err-page">
             <h1 class="err-code">404</h1>
             <p class="err-text">页面走丢了，去别处看看吧。</p>
-            <a class="btn-back" href="<?php $this->options->siteUrl(); ?>">← 回到首页</a>
+            <a class="btn-back" href="<?php echo $this->options->siteUrl; ?>">← 回到首页</a>
         </section>
     </div>
 </div>

@@ -29,7 +29,7 @@
 
 <header class="aurora-topbar" id="aurora-top">
     <div class="topbar-inner">
-        <a class="aurora-brand" href="<?php $this->options->siteUrl(); ?>" aria-label="返回首页">
+        <a class="aurora-brand" href="<?php echo $this->options->siteUrl; ?>" aria-label="返回首页">
             <svg class="brand-mark" width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="aur-lg" x1="0" y1="0" x2="48" y2="48">
@@ -45,7 +45,7 @@
         </a>
 
         <nav class="aurora-nav" id="aurora-nav">
-            <a href="<?php $this->options->siteUrl(); ?>" class="nav-link">首页</a>
+            <a href="<?php echo $this->options->siteUrl; ?>" class="nav-link">首页</a>
             <?php $this->widget('Widget_Contents_Page_List')->parse('<a href="{permalink}" class="nav-link">{title}</a>'); ?>
             <div class="nav-drop">
                 <span class="nav-link">分类 <b class="caret">▾</b></span>
@@ -58,7 +58,7 @@
         <button class="nav-toggle" id="nav-toggle" aria-label="菜单"><span></span><span></span><span></span></button>
 
         <div class="topbar-search" id="top-search">
-            <form method="post" action="<?php $this->options->siteUrl(); ?>">
+            <form method="post" action="<?php echo $this->options->siteUrl; ?>">
                 <input type="text" name="s" placeholder="搜点什么…" value="<?php echo htmlspecialchars($this->request->get('s')); ?>">
             </form>
         </div>
