@@ -57,7 +57,7 @@ body::before{
 
 a{color:var(--aurora);text-decoration:none;transition:color .2s}
 a:hover{color:#67e8f9;text-shadow:0 0 12px rgba(34,211,238,.5)}
-h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px}
+h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:var(--text);letter-spacing:.3px}
 
 /* ---------- 顶部栏 ---------- */
 .aurora-topbar{
@@ -141,7 +141,7 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
 }
 .art-card:hover::before{opacity:1}
 .art-title{margin:0 0 8px;font-size:22px}
-.art-title a{color:#fff;transition:color .2s}
+.art-title a{color:var(--text);transition:color .2s}
 .art-title a:hover{color:#67e8f9}
 .art-excerpt{margin:0;color:var(--text-2);font-size:15.5px;line-height:1.75}
 .art-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:13.5px;color:var(--text-3)}
@@ -173,7 +173,7 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
 }
 .post-toc::before{
     content:"目录";
-    display:inline-block;font-size:14px;font-weight:700;color:#fff;
+    display:inline-block;font-size:14px;font-weight:700;color:var(--text);
     letter-spacing:1px;margin-bottom:10px;
     border-left:3px solid var(--aurora);padding-left:9px;
 }
@@ -254,11 +254,11 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
     background:linear-gradient(rgba(13,17,23,0),var(--code-bg));pointer-events:none;
 }
 .post-body .code-fold{margin-left:auto;padding:4px 12px;font-size:12px;font-weight:600;color:#67e8f9;background:var(--bg-2);border:1px solid var(--card-border);border-radius:8px;cursor:pointer;transition:all .2s}
-.post-body .code-fold:hover{color:#fff;border-color:var(--aurora)}
+.post-body .code-fold:hover{color:var(--text);border-color:var(--aurora)}
 
 /* 表格 */
 .post-body table{width:100%;margin:1.6em 0;border-collapse:collapse;font-size:15px;overflow:hidden;border-radius:var(--radius);border:1px solid var(--card-border)}
-.post-body th{background:rgba(34,211,238,.08);color:#fff;padding:11px 14px;text-align:left;font-weight:600}
+.post-body th{background:rgba(34,211,238,.08);color:var(--text);padding:11px 14px;text-align:left;font-weight:600}
 .post-body td{padding:10px 14px;color:var(--text-2);border-top:1px solid var(--card-border)}
 .post-body tr:hover td{background:rgba(255,255,255,.03)}
 
@@ -285,12 +285,12 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
     background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);
 }
 .post-author img{width:52px;height:52px;border-radius:50%;border:1px solid var(--aurora);box-shadow:var(--glow);object-fit:cover}
-.post-author b{color:#fff;display:block}
+.post-author b{color:var(--text);display:block}
 .post-author span{color:var(--text-3);font-size:14px}
 
 /* ---------- 评论 ---------- */
 .comment-block{padding:12px 0 20px}
-.block-title{font-size:19px;margin:0 0 16px;color:#fff}
+.block-title{font-size:19px;margin:0 0 16px;color:var(--text)}
 .comments-off{color:var(--text-3);text-align:center;padding:14px 0;border:1px dashed var(--card-border);border-radius:var(--radius)}
 .comment-list{display:flex;flex-direction:column;gap:13px}
 .comment-single{padding:16px 18px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius)}
@@ -319,7 +319,7 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
 }
 .side-box:hover{border-color:var(--card-border-strong)}
 .side-title{
-    display:flex;align-items:center;gap:8px;margin:0 0 13px;font-size:15px;font-weight:700;color:#fff;letter-spacing:.4px;
+    display:flex;align-items:center;gap:8px;margin:0 0 13px;font-size:15px;font-weight:700;color:var(--text);letter-spacing:.4px;
 }
 .side-title::after{content:"";flex:1;height:1px;background:var(--card-border)}
 .side-title i{font-style:normal;color:var(--aurora)}
@@ -370,7 +370,7 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
 /* ---------- 页脚 ---------- */
 .aurora-footer{position:relative;z-index:1;margin-top:34px;border-top:1px solid var(--card-border);background:rgba(7,11,20,.5);backdrop-filter:blur(8px)}
 .footer-inner{max-width:1160px;margin:0 auto;padding:24px 22px 26px;text-align:center}
-.footer-brand{color:#fff;font-size:15px;margin:0 0 8px}
+.footer-brand{color:var(--text);font-size:15px;margin:0 0 8px}
 .footer-brand .dot{color:var(--aurora)}
 .footer-meta{color:var(--text-3);font-size:13px;margin:6px 0}
 .footer-meta a{color:var(--text-2)}
