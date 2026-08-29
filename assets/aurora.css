@@ -184,6 +184,8 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:#fff;letter-spacing:.3px
 .toc-list a:hover{color:#67e8f9}
 .toc-list a.active{color:var(--aurora);font-weight:600}
 .toc-list .toc-h3 a.active{color:#67e8f9}
+.side-toc .toc-wrap{max-height:400px;overflow-y:auto}
+.side-toc .toc-list .toc-h2 a{border-bottom:none;padding:5px 0}
 .post-head{padding:14px 0 4px}
 .post-title{margin:0;font-size:31px;font-weight:700;line-height:1.35}
 .post-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:13.5px;color:var(--text-3)}

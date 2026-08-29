@@ -15,8 +15,6 @@
                 </div>
             </header>
 
-            <nav class="post-toc" id="post-toc" aria-label="文章目录"></nav>
-
             <div class="post-body">
                 <?php $this->content(); ?>
             </div>
