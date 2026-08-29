@@ -23,8 +23,8 @@ for f in *.php; do
   $PHP -l "$f" >/dev/null 2>&1 && echo "  ✓ $f" || { echo "  ✗ $f"; PHP_FAIL=1; }
 done
 JS_FAIL=0
-python3 -c "import ast;ast.parse(open('assets/aurora.js').read())" 2>/dev/null || JS_FAIL=1
-[ $JS_FAIL -eq 0 ] && echo "  ✓ assets/aurora.js" || echo "  ✗ assets/aurora.js"
+node --check assets/aurora.js >/dev/null 2>&1 || JS_FAIL=1
+[ $JS_FAIL -eq 0 ] && echo "  ✓ assets/aurora.js" || echo "  ✗ assets/aurora.js (node --check)"
 if [ $PHP_FAIL -ne 0 ] || [ $JS_FAIL -ne 0 ]; then echo "语法错误，中止。"; exit 1; fi
 
 # ---------- Step 3 回归测试 ----------

@@ -80,14 +80,14 @@ def main():
         v = navigate(w, url)
         if "err" in v: print(f"[{name}] ⚠ 检查异常: {v['err']}"); continue
         flags = []
-        if name == "文章37(TOC)" and v.get("toc", 0) < 2: flags.append("TOC缺失")
-        if name == "文章5(代码)" and v.get("codeHead", 0) < 1: flags.append("代码块增强缺失")
-        if v.get("dslash") > 0: flags.append("双斜杠"+str(v["dslash"]))
-        if v.get("emptyHref") > 0: flags.append("空href"+str(v["emptyHref"]))
+        if name == "文章37(TOC)" and (v.get("toc") or 0) < 2: flags.append("TOC缺失")
+        if name == "文章5(代码)" and (v.get("codeHead") or 0) < 1: flags.append("代码块增强缺失")
+        if (v.get("dslash") or 0) > 0: flags.append("双斜杠"+str(v.get("dslash")))
+        if (v.get("emptyHref") or 0) > 0: flags.append("空href"+str(v.get("emptyHref")))
         if not v.get("beian"): flags.append("备案缺失")
         if not v.get("aurora"): flags.append("非Aurora主题")
         status = "✅" if not flags else "⚠ " + ", ".join(flags)
-        print(f"[{name}] {status} | TOC:{v.get('toc',0)} 代码块:{v.get('codeHead',0)} 侧栏:{v.get('sideBox',0)} hljs:{'ok' if v.get('hljs') else 'no'}")
+        print(f"[{name}] {status} | TOC:{v.get('toc') or 0} 代码块:{v.get('codeHead') or 0} 侧栏:{v.get('sideBox') or 0} hljs:{'ok' if v.get('hljs') else 'no'}")
     print("=" * 50)
     print("提示：改动主题后若改过 css/js，请确认 header/footer 的 ?v= 已递增。")
 
