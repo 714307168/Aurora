@@ -41,4 +41,8 @@ function aurora_theme_config($form)
     $copy = new Typecho_Widget_Helper_Form_Element_Radio('aurora_copy',
         array('1' => _t('显示'), '0' => _t('隐藏')), '1', _t('页脚版权信息'), _t('备案号始终保留'));
     $form->addInput($copy);
+
+    $beian = new Typecho_Widget_Helper_Form_Element_Text('aurora_beian',
+        NULL, '', _t('页脚备案号'), _t('留空则不显示。填写含链接的备案 HTML，如：<a href="https://beian.miit.gov.cn/" target="_blank">京ICP备00000000号</a>'));
+    $form->addInput($beian);
 }

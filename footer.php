@@ -7,11 +7,7 @@
         <p class="footer-meta">
             © <?php echo date('Y'); ?> <a href="<?php $this->options->siteUrl(); ?>"><?php $this->options->title(); ?></a>. Theme <a href="<?php $this->options->siteUrl(); ?>">Aurora</a>, Made with <span class="heart">♥</span>.
         </p>
-        <p class="footer-beian">
-            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer nofollow">豫ICP备19000972号</a>
-            &nbsp;|&nbsp;
-            <a href="https://beian.mps.gov.cn/#/query/webSearch" target="_blank" rel="noopener noreferrer nofollow">浙公网安备 33010602012967号</a>
-        </p>
+        <p class="footer-beian"><?php if($this->options->aurora_beian): ?><?php echo $this->options->aurora_beian; ?><?php endif; ?></p>
     </div>
 </footer>
 
