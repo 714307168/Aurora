@@ -44,22 +44,30 @@ def navigate(w, url):
             m = json.loads(w.recv())
             if m.get("id") == mid: return m.get("result", {})
     send("Runtime.enable"); send("Page.enable")
-    send("Page.navigate", {"url": url}); time.sleep(4)
+    send("Page.navigate", {"url": url})
+    # 等待页面真正加载完成（readyState=complete），最多 12s
+    for _ in range(24):
+        st = send("Runtime.evaluate", {"expression": "document.readyState", "returnByValue": True}).get("result", {}).get("value")
+        if st == "complete": break
+        time.sleep(0.5)
+    time.sleep(1)
     r = send("Runtime.evaluate", {"expression": """(()=>{
       const $$=s=>document.querySelectorAll(s);
-      return {
-        title:(document.title||'').slice(0,40),
-        aurora:!!document.querySelector('.aurora-container')||!!document.querySelector('.aurora-post'),
-        toc:$$('#post-toc a').length,
-        codeHead:$$('.code-head').length,
-        sideBox:$$('.side-box').length,
-        navDrop:!!document.querySelector('.nav-drop .drop-menu'),
-        beian:(document.querySelector('.footer-beian')?.textContent||'').slice(0,14),
-        dslash:$$('a[href*="//index.php"]').length,
-        emptyHref:$$('a[href=""]').length,
-        hljs:typeof hljs!=='undefined',
-        h:(document.body?document.body.scrollHeight:0)
-      }} catch(e) { return {err: e.message}; }
+      const ex={};
+      try{
+        ex.title=(document.title||'').slice(0,40);
+        ex.aurora=!!document.querySelector('.aurora-container')||!!document.querySelector('.aurora-post');
+        ex.toc=$$('#post-toc a').length;
+        ex.codeHead=$$('.code-head').length;
+        ex.sideBox=$$('.side-box').length;
+        ex.navDrop=!!document.querySelector('.nav-drop .drop-menu');
+        ex.beian=(document.querySelector('.footer-beian')?.textContent||'').slice(0,14);
+        ex.dslash=$$('a[href*="//index.php"]').length;
+        ex.emptyHref=$$('a[href=""]').length;
+        ex.hljs=typeof hljs!=='undefined';
+        ex.h=(document.body?document.body.scrollHeight:0);
+      } catch(e) { ex.err=e.message; }
+      return ex;
     })()""", "returnByValue": True})
     return r.get("result", {}).get("value", {})
 
