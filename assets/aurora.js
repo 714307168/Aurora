@@ -209,7 +209,7 @@
     if (!btn) return;
     var apply = function (t) {
       document.documentElement.setAttribute("data-theme", t);
-      btn.textContent = t === "light" ? "☀️" : "🌙";
+      btn.textContent = t === "light" ? "☀" : "☾";
       btn.setAttribute("aria-pressed", t === "light" ? "true" : "false");
       try { localStorage.setItem("aurora-theme", t); } catch (e) {}
     };
