@@ -240,15 +240,15 @@ h1,h2,h3,h4,h5,h6{font-weight:600;line-height:1.4;color:var(--text);letter-spaci
 @media (max-width:768px){#read-progress{top:56px}}
 
 /* 代码块：行号 + 长代码折叠 */
-.post-body pre{display:flex;flex-wrap:wrap;align-items:stretch;padding:0;overflow:hidden}
-.post-body pre .code-head{flex:0 0 100%;order:-1;margin:0;border-radius:var(--radius) var(--radius) 0 0}
-.post-body pre .line-nums{
-    flex:0 0 auto;order:0;min-width:46px;padding:1.15em 10px 1.15em 0;text-align:right;
+.post-body pre.code-lines{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;align-items:stretch;padding:0;overflow:hidden}
+.post-body pre.code-lines .code-head{grid-column:1/-1;grid-row:1;margin:0;border-radius:var(--radius) var(--radius) 0 0}
+.post-body pre.code-lines .line-nums{
+    grid-column:1;grid-row:2;min-width:46px;padding:1.15em 10px 1.15em 0;text-align:right;
     color:var(--text-3);font-family:var(--mono);font-size:13px;line-height:1.7;
     border-right:1px solid rgba(255,255,255,.05);user-select:none;background:rgba(255,255,255,.02);
 }
 .post-body pre .line-nums span{display:block}
-.post-body pre code{flex:1 1 auto;order:1;min-width:0;overflow-x:auto;padding:1.15em 1.3em}
+.post-body pre.code-lines code{grid-column:2;grid-row:2;min-width:0;overflow-x:auto;padding:1.15em 1.3em}
 .post-body pre.code-collapsed{max-height:460px;overflow:hidden;position:relative}
 .post-body pre.code-collapsed::after{
     content:"";position:absolute;left:0;right:0;bottom:0;height:80px;

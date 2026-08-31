@@ -55,7 +55,11 @@ class AuroraRoadmapContractTest(unittest.TestCase):
 
     def test_code_line_count_has_no_off_by_one(self):
         js = text("assets/aurora.js")
+        css = text("assets/aurora.css")
         self.assertNotIn('split("\\n").length - 1', js)
+        self.assertIn("pre.code-lines{display:grid", css)
+        self.assertIn("grid-template-columns:auto minmax(0,1fr)", css)
+        self.assertNotIn("pre{display:flex;flex-wrap:wrap", css)
 
     def test_i18n_and_accessibility_contract(self):
         functions = text("functions.php")
@@ -75,6 +79,7 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         self.assertIn("location.href", qa)
         self.assertIn("Network.setCacheDisabled", qa)
         self.assertIn("aurora-qa-404-", qa)
+        self.assertIn("codeAligned", qa)
         self.assertIn("python3 -m unittest", release)
         self.assertLess(release.index("同步线上站"), release.index("AURORA_SITE=https://www.liuyg.cn python3 scripts/qa-scan.py"))
         self.assertIn("trap rollback ERR", release)

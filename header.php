@@ -22,7 +22,7 @@ $titleFormats = Aurora::lang() === 'en-US' ? array(
     <link rel="icon" href="<?php $this->options->themeUrl('assets/logo.svg'); ?>" type="image/svg+xml">
     <?php if (!$this->is('single')): ?><link rel="canonical" href="<?php echo Aurora::e($canonical); ?>"><?php endif; ?>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<?php echo Aurora::e($this->options->feedUrl); ?>">
-    <link rel="stylesheet" href="<?php echo $this->options->themeUrl('assets/aurora.css'); ?>?v=20260840">
+    <link rel="stylesheet" href="<?php echo $this->options->themeUrl('assets/aurora.css'); ?>?v=20260841">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 
     <meta name="description" content="<?php echo Aurora::e($metaDescription); ?>">

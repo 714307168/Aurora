@@ -80,6 +80,12 @@ def navigate(w, url):
         ex.aurora=!!document.querySelector('.aurora-container')||!!document.querySelector('.aurora-post');
         ex.toc=$$('#post-toc a').length;
         ex.codeHead=$$('.code-head').length;
+        ex.codeAligned=Array.from($$('.post-body pre.code-lines')).every(p=>{
+          const n=p.querySelector('.line-nums'),c=p.querySelector('code');
+          if(!n||!c)return false;
+          const nr=n.getBoundingClientRect(),cr=c.getBoundingClientRect();
+          return Math.abs(nr.y-cr.y)<2 && cr.x>=nr.x+nr.width-2;
+        });
         ex.sideBox=$$('.side-box').length;
         ex.navDrop=!!document.querySelector('.nav-drop .drop-menu');
         ex.beian=(document.querySelector('.footer-beian')?.textContent||'').slice(0,14);
@@ -122,6 +128,7 @@ def main():
         flags = []
         if name == "文章37(TOC)" and (v.get("toc") or 0) < 2: flags.append("TOC缺失")
         if name == "文章5(代码)" and (v.get("codeHead") or 0) < 1: flags.append("代码块增强缺失")
+        if name == "文章5(代码)" and not v.get("codeAligned"): flags.append("代码行号与正文错位")
         if (v.get("dslash") or 0) > 0: flags.append("双斜杠"+str(v.get("dslash")))
         if (v.get("emptyHref") or 0) > 0: flags.append("空href"+str(v.get("emptyHref")))
         if not v.get("beian"): flags.append("备案缺失")
