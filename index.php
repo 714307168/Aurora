@@ -1,7 +1,8 @@
 <?php if(!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php $showSidebar = $this->options->aurora_sidebar !== '0'; ?>
 <?php $this->need('header.php'); ?>
 
-<div class="aurora-container layout">
+<div class="aurora-container layout<?php echo $showSidebar ? '' : ' no-sidebar'; ?>">
     <div class="content-pane">
         <section class="home-hero">
             <h1><?php $this->options->title(); ?></h1>
@@ -18,7 +19,7 @@
                 <div class="art-meta">
                     <time datetime="<?php $this->date('c'); ?>"><?php $this->date(); ?></time>
                     <?php if ($this->category): ?><span class="cat"><?php $this->category(','); ?></span><?php endif; ?>
-                    <span class="cmt"><?php $this->commentsNum('0 评论', '1 评论', '%d 评论'); ?></span>
+                    <span class="views"><?php echo Aurora::post_views($this, false) . ' ' . Aurora::t('views'); ?></span>
                 </div>
             </article>
         <?php endwhile; ?>
@@ -27,9 +28,9 @@
         <?php $this->pageNav('‹', '›', 3, '…', array('wrapTag' => 'nav', 'itemTag' => 'span')); ?>
     </div>
 
-    <aside class="aurora-sidebar">
+    <?php if ($showSidebar): ?><aside class="aurora-sidebar">
         <?php $this->need('sidebar.php'); ?>
-    </aside>
+    </aside><?php endif; ?>
 </div>
 
 <?php $this->need('footer.php'); ?>

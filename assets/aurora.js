@@ -2,12 +2,21 @@
 (function () {
   "use strict";
 
+  var UI = document.documentElement.lang === "en-US" ? {
+    code: "Code", copy: "Copy", copied: "Copied", expand: "Expand %d lines",
+    reading: "About %d words · %d min"
+  } : {
+    code: "代码", copy: "复制", copied: "已复制", expand: "展开 %d 行",
+    reading: "约 %d 字 · %d 分钟"
+  };
+
   // 移动端菜单开合
   var toggle = document.getElementById("nav-toggle");
   var nav = document.getElementById("aurora-nav");
   if (toggle && nav) {
     toggle.addEventListener("click", function () {
       nav.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", nav.classList.contains("open") ? "true" : "false");
     });
   }
 
@@ -72,17 +81,17 @@
         head.className = "code-head";
         var tag = document.createElement("span");
         tag.className = "code-lang";
-        tag.textContent = LANG_NAMES[lang] || "代码";
+        tag.textContent = LANG_NAMES[lang] || UI.code;
         var btn = document.createElement("button");
         btn.className = "code-copy";
         btn.type = "button";
-        btn.textContent = "复制";
+        btn.textContent = UI.copy;
         (function (codeRef, btnRef) {
           btnRef.addEventListener("click", function () {
             var text = (codeRef.textContent || "").replace(/\n$/, "");
             var done = function () {
-              btnRef.textContent = "已复制";
-              setTimeout(function () { btnRef.textContent = "复制"; }, 1600);
+              btnRef.textContent = UI.copied;
+              setTimeout(function () { btnRef.textContent = UI.copy; }, 1600);
             };
             if (navigator.clipboard && navigator.clipboard.writeText) {
               navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
@@ -96,7 +105,8 @@
 
       // 行号 + 长代码折叠（只加一次）
       if (!pre.querySelector(".line-nums")) {
-        var lines = (code.textContent || "").split("\n").length - 1;
+        var codeText = (code.textContent || "").replace(/\n$/, "");
+        var lines = codeText ? codeText.split("\n").length : 1;
         if (lines < 1) lines = 1;
         var ln = document.createElement("div");
         ln.className = "line-nums";
@@ -114,7 +124,7 @@
             var fold = document.createElement("button");
             fold.className = "code-fold";
             fold.type = "button";
-            fold.textContent = "展开 " + lines + " 行";
+            fold.textContent = UI.expand.replace("%d", lines);
             (function (preRef, foldRef) {
               foldRef.addEventListener("click", function () {
                 preRef.classList.remove("code-collapsed");
@@ -200,6 +210,7 @@
     var apply = function (t) {
       document.documentElement.setAttribute("data-theme", t);
       btn.textContent = t === "light" ? "☀️" : "🌙";
+      btn.setAttribute("aria-pressed", t === "light" ? "true" : "false");
       try { localStorage.setItem("aurora-theme", t); } catch (e) {}
     };
     var saved = null;
@@ -235,12 +246,70 @@
     big.src = src; big.className = "lightbox-img"; big.alt = "";
     box.appendChild(big);
     document.body.appendChild(box);
-    var close = function (e) { if (!e.key || e.key === "Escape") box.remove(); };
+    var close = function (e) {
+      if (!e.key || e.key === "Escape") {
+        box.remove();
+        document.removeEventListener("keydown", close);
+      }
+    };
     document.addEventListener("keydown", close);
     box.addEventListener("click", close);
   }
 
-  function init() { enhanceCode(); buildToc(); readProgress(); themeToggle(); enhanceImages(); }
+  // 正文字数与阅读时长：中文按字、英文/数字按词，约 400 字词/分钟。
+  function readingMeta() {
+    var body = document.querySelector(".post-body");
+    var target = document.getElementById("post-reading-meta");
+    if (!body || !target) return;
+    var content = (body.textContent || "").trim();
+    var han = content.match(/[\u3400-\u9fff]/g) || [];
+    var latin = content.replace(/[\u3400-\u9fff]/g, " ").match(/[A-Za-z0-9]+(?:[-_.'][A-Za-z0-9]+)*/g) || [];
+    var words = han.length + latin.length;
+    var minutes = Math.max(1, Math.ceil(words / 400));
+    var template = target.getAttribute("data-template") || UI.reading;
+    target.textContent = template.replace("%d", words).replace("%d", minutes);
+  }
+
+  // 免登录喜欢/收藏：仅保存在当前浏览器，不伪造全站计数。
+  function postReactions() {
+    var box = document.querySelector(".post-reactions");
+    if (!box) return;
+    var postId = box.getAttribute("data-post-id") || "unknown";
+    var buttons = box.querySelectorAll("[data-action]");
+    for (var i = 0; i < buttons.length; i++) {
+      (function (button) {
+        var action = button.getAttribute("data-action");
+        var key = "aurora-post-" + action + "-" + postId;
+        var apply = function (active) {
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", active ? "true" : "false");
+          var icon = action === "like" ? (active ? "♥" : "♡") : (active ? "★" : "☆");
+          button.firstChild.nodeValue = icon + " ";
+        };
+        var active = false;
+        try { active = localStorage.getItem(key) === "1"; } catch (e) {}
+        apply(active);
+        button.addEventListener("click", function () {
+          active = !active;
+          try {
+            if (active) localStorage.setItem(key, "1");
+            else localStorage.removeItem(key);
+          } catch (e) {}
+          apply(active);
+        });
+      })(buttons[i]);
+    }
+  }
+
+  function init() {
+    enhanceCode();
+    buildToc();
+    readProgress();
+    themeToggle();
+    enhanceImages();
+    readingMeta();
+    postReactions();
+  }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else { init(); }

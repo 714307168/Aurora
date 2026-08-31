@@ -1,89 +1,54 @@
-# 09 · SOP：改动 → 测试 → 发布 → 上线
+# 09 · SOP：改动 → 验证 → 发布
 
-> 主题每次改动的标准作业流程。**按顺序执行，每步有通过标准；不通过就停，别带问题上线。**
+## 三个权威位置
 
-## 0. 三条路径（先记住）
+| 环境 | 位置 |
+| --- | --- |
+| 源码/Git | `/root/aurora-theme/` |
+| 线上主题 | `/home/wwwroot/www.liuyg.cn/usr/themes/Aurora/` |
+| GitHub | `git@github.com:714307168/Aurora.git` |
 
-| 环境 | 位置 | 说明 |
-| --- | --- | --- |
-| 本地项目 | `/root/aurora-theme/` | **源头**，改代码只在这改，git 仓库在这 |
-| GitHub | `git@github.com:714307168/Aurora.git` | 开源仓库，SSH 推送 |
-| 线上站 | `/home/wwwroot/www.liuyg.cn/usr/themes/Aurora/` | 实际生效的博客主题 |
+只改源码目录，禁止直接手改线上副本。
 
-原则：**改代码一律在本地项目改 → 测试通过 → 推 GitHub → 再同步线上**。不要直接在线上站改。
+## 一键发布
 
----
-
-## Step 1　修改
-在 `/root/aurora-theme/` 改主题文件（PHP/CSS/JS/设置）。
-
-## Step 2　静态检查
 ```bash
 cd /root/aurora-theme
-for f in *.php; do /www/server/php/80/bin/php -l "$f" >/dev/null 2>&1 && echo "✓ $f" || echo "✗ $f"; done
-python3 -c "import ast;ast.parse(open('assets/aurora.js').read())"   # JS 语法
+bash scripts/release.sh "feat: 变更说明"
 ```
-**通过标准**：无 `✗`。
 
-## Step 3　回归测试
-```bash
-python3 scripts/qa-scan.py     # 可达性 + TOC/代码块/侧栏/双斜杠/空href/备案 + console
-```
-**通过标准**：每个页面输出 `✅` 或仅合理提示（如无代码块页 codeHead=0 属正常）。出现 `双斜杠`/`空href`/`TOC缺失`/`备案缺失` 必须修。
+脚本严格执行 8 个节点：
 
-## Step 4　版本号（改了 css/js 必做）
-改了 `assets/aurora.css` 或 `assets/aurora.js`，必须让 `?v=` 递增，否则 CDN 缓存旧文件：
-```bash
-# header.php 的 aurora.css?v=YYYYMMDD 与 footer.php 的 aurora.js?v=YYYYMMDD 同步 bump 到当日日期
-```
-**通过标准**：bump 后 `curl -s http://127.0.0.1/ -H 'Host: www.liuyg.cn' | grep -o 'aurora.[a-z]*.v=[0-9]*'` 显示新值。
+1. `unittest` 功能契约；
+2. PHP/JS/Shell/diff 语法检查；
+3. CSS/JS 改动时递增 `?v=`，只增不减；
+4. 在同盘构建完整暂存主题，将现有主题目录移入 `.aurora-backups/Aurora-时间`，再用目录 rename 切换，避免逐文件混合版本；
+5. 原子生成 `/home/wwwroot/www.liuyg.cn/sitemap.xml`；
+6. 对**同步后的新线上版本**执行 `qa-scan.py`；失败自动恢复上一版；
+7. `git commit` + SSH push GitHub；
+8. 首页、文章、友链、sitemap HTTP 200 + 双斜杠 0。
 
-## Step 5　同步线上站
+## 为什么 QA 必须放在同步后
+
+旧流程在同步前跑浏览器 QA，测到的是旧线上代码，会“假绿”。现在本地契约负责发布前拦截，真实浏览器 QA 在同步后执行，并有自动回滚兜底。
+
+## 回滚
+
+自动回滚：目录切换后任何 sitemap、QA、HTTP、commit 或 push 失败，脚本恢复完整旧主题目录与旧 sitemap 后退出 1。push 成功后才解除回滚 trap。
+
+人工回滚：
+
 ```bash
-for f in *.php style.css assets/*; do
-  cp "$f" /home/wwwroot/www.liuyg.cn/usr/themes/Aurora/"$f"
-done
+BACKUP=/home/wwwroot/www.liuyg.cn/usr/themes/.aurora-backups/Aurora-时间
+mv /home/wwwroot/www.liuyg.cn/usr/themes/Aurora /home/wwwroot/www.liuyg.cn/usr/themes/Aurora.failed
+mv "$BACKUP" /home/wwwroot/www.liuyg.cn/usr/themes/Aurora
 chown -R www:www /home/wwwroot/www.liuyg.cn/usr/themes/Aurora
-touch /home/wwwroot/www.liuyg.cn/usr/themes/Aurora/*.php 2>/dev/null   # 触发 opcache 失效
-```
-**通过标准**：文件清单一致，无权限错误。
-
-## Step 6　文档同步（强制）
-改了什么就更新对应文档（见 [README.md](README.md) 的「文档同步规则」）：模板→01/03，CSS→02，JS→04，设置→05，坑→06/07，测试→08。
-
-## Step 7　提交 + 推送 GitHub
-```bash
-cd /root/aurora-theme
-git add -A
-git commit -m "描述变更（含文档同步）"
-GIT_SSH_COMMAND="ssh -i ~/.ssh/aurora_github -o IdentitiesOnly=yes" git push
-```
-**通过标准**：`git push` 显示 `main -> main`，无 403。
-
-## Step 8　线上验证
-```bash
-for u in / /index.php/archives/37/ /index.php/links.html; do
-  curl -s --noproxy '*' -o /dev/null -w "%{http_code} $u\n" "https://www.liuyg.cn$u"
-done
-curl -s --noproxy '*' "https://www.liuyg.cn/" | grep -c '//index.php'   # 期望 0
-```
-**通过标准**：全部 200、双斜杠 0。
-
-## Step 9　回滚（出问题时的退路）
-```bash
-# 本地回退 + 重新推
-cd /root/aurora-theme && git revert HEAD && git push
-# 或临时把主题切回备份：后台「外观」切到 Single/Nova
 ```
 
----
+最多保留最近 5 份发布备份。Git 侧另用 `git revert HEAD`，不要强推覆盖历史。
 
-## 一键脚本
+## 文档同步规则
 
-`scripts/release.sh` 把 Step 2-8 串成一条命令（语法检查 → 测试 → 同步线上 → bump 版本提示 → commit+push → 线上验证）。日常改动跑它：
-
-```bash
-bash scripts/release.sh "本次改动描述"
-```
-
-> 高风险操作：脚本会自动 commit/push 并同步线上站，**执行前请确认当前分支干净、改动已就绪**。
+- 模板/DOM → `03`；JS → `04`；设置 → `05`；测试 → `08`；流程 → `09`；规划状态 → `10/11`；
+- README 只写用户可见功能和安装方法；实现坑与 SOP 留在 docs；
+- 发版完成必须满足：线上运行证据 + Git 远端推送，不以“文件已写”代替上线。

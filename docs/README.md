@@ -21,8 +21,8 @@
 | 07 | [交接速查](07-交接速查.md) | 一键速查：核心概念、关键文件、高频操作 |
 | 08 | [测试指南](08-测试指南.md) | 回归自检命令、重点检查清单、常见失败信号（配套 `scripts/qa-scan.py`） |
 | 09 | [SOP 发版流程](09-SOP-发版流程.md) | 改动→测试→发布→上线 标准流程（配套 `scripts/release.sh` 一键发布） |
-| 10 | [下一期路线图](10-下一期路线图.md) | 功能规划与优先级（P0-P3），建议批次推进 |
-| 11 | [开发计划](11-开发计划.md) | 执行细则：每项实现思路/涉及文件/验收，按批次发版 |
+| 10 | [功能路线图](10-下一期路线图.md) | P0-P3 完成状态与版本里程碑 |
+| 11 | [开发计划与完成记录](11-开发计划.md) | 实现边界、验收证据与完成标准 |
 
 ## 快速开始（30 秒了解）
 
@@ -30,7 +30,7 @@
 - **入口**：`index.php`（首页）→ `head`/`footer` 引入 `assets/aurora.css` + `assets/aurora.js`
 - **设计系统**：所有颜色/圆角/阴影集中在 `assets/aurora.css` 顶部的 `:root` 变量里
 - **前端逻辑**：`assets/aurora.js` 一个 IIFE，含导航、回到顶部、代码块增强、文章目录
-- **主题设置**：`functions.php` 的 `aurora_theme_config()`，对应数据库 `typecho_options` 里的 `aurora_*`
+- **主题设置**：`functions.php` 的 Typecho 标准 `themeConfig()`，对应数据库 `typecho_options` 里的 `aurora_*`
 - **线上实例**：https://www.liuyg.cn（演示站，备案号通过主题设置 `aurora_beian` 配置）
 
 ## ⚠️ 文档同步规则（强制）
