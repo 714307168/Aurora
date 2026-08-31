@@ -50,7 +50,7 @@ $renderHotPosts = function () {
     <div class="side-box">
         <h4 class="side-title"><i>✦</i> <?php echo Aurora::t('categories'); ?></h4>
         <ul class="side-cats compact-grid">
-            <?php $this->widget('Widget_Metas_Category_List')->parse('<li><a href="{permalink}"><span>{name}</span><em>{count}</em></a></li>'); ?>
+            <?php $this->widget('Widget_Metas_Category_List')->parse('<li><a href="{permalink}" title="{name}"><span>{name}</span><em>{count}</em></a></li>'); ?>
         </ul>
     </div>
 

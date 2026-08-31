@@ -28,6 +28,10 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         self.assertIn(".home-layout{display:grid", css)
         self.assertIn(".home-featured{", css)
         self.assertIn("grid-template-columns:minmax(0,1fr) 190px", css)
+        self.assertIn(':root[data-theme="light"] .home-featured-copy>p', css)
+        self.assertIn("overflow-wrap:anywhere", css)
+        self.assertIn("@media (max-width:480px)", css)
+        self.assertIn(".topbar-search{display:none}", css)
         self.assertIn("homeFeatured", text("scripts/qa-scan.py"))
         self.assertIn("homeThumbs", text("scripts/qa-scan.py"))
 
