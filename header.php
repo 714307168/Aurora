@@ -4,7 +4,7 @@ $isPost = $this->is('post');
 $canonical = Aurora::canonical($this);
 $metaTitle = $isPost ? (string)$this->title : ((string)$this->archiveTitle ?: (string)$this->options->title);
 $metaDescription = $isPost ? trim(strip_tags((string)$this->description)) : (string)$this->options->description;
-$metaKeywords = $isPost && $this->fields->keywords ? (string)$this->fields->keywords : (string)$this->options->description;
+$metaKeywords = $isPost && $this->fields->keywords ? (string)$this->fields->keywords : (string)$this->options->keywords;
 $ogImage = Aurora::og_image($this);
 $jsonLd = Aurora::json_ld($this);
 $titleFormats = Aurora::lang() === 'en-US' ? array(

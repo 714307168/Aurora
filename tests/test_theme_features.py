@@ -57,6 +57,8 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         self.assertIn("($widget->is('post') || $widget->is('page')) ? self::content_image($widget) : null", functions)
         self.assertIn("function content_image", functions)
         self.assertIn('name="twitter:card"', header)
+        self.assertIn("$this->options->keywords", header)
+        self.assertNotIn("(string)$this->options->description;\n$ogImage", header)
         self.assertIn('rel="alternate"', header)
         self.assertIn("feedUrl", header)
 
