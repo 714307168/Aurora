@@ -11,6 +11,26 @@ def text(name: str) -> str:
 
 
 class AuroraRoadmapContractTest(unittest.TestCase):
+    def test_homepage_uses_dense_featured_layout(self):
+        index = text("index.php")
+        sidebar = text("sidebar.php")
+        css = text("assets/aurora.css")
+        self.assertIn('class="home-featured"', index)
+        self.assertIn('class="home-layout', index)
+        self.assertIn('class="art-thumb', index)
+        self.assertIn("Aurora::content_image", index)
+        self.assertIn("Aurora::site_stats", index)
+        self.assertIn("Aurora::featured_post", index)
+        self.assertIn('class="side-cats compact-grid"', sidebar)
+        self.assertIn('class="side-box side-archive-fold"', sidebar)
+        self.assertIn("limit=24", sidebar)
+        self.assertIn("max-width:1380px", css)
+        self.assertIn(".home-layout{display:grid", css)
+        self.assertIn(".home-featured{", css)
+        self.assertIn("grid-template-columns:minmax(0,1fr) 190px", css)
+        self.assertIn("homeFeatured", text("scripts/qa-scan.py"))
+        self.assertIn("homeThumbs", text("scripts/qa-scan.py"))
+
     def test_content_value_features_are_wired(self):
         post = text("post.php")
         functions = text("functions.php")
@@ -29,7 +49,9 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         self.assertIn('rel="canonical"', header)
         self.assertIn('application/ld+json', header)
         self.assertIn('property="og:image"', header)
-        self.assertIn("$text = ($widget->is('post') || $widget->is('page')) ?", text("functions.php"))
+        functions = text("functions.php")
+        self.assertIn("($widget->is('post') || $widget->is('page')) ? self::content_image($widget) : null", functions)
+        self.assertIn("function content_image", functions)
         self.assertIn('name="twitter:card"', header)
         self.assertIn('rel="alternate"', header)
         self.assertIn("feedUrl", header)

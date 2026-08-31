@@ -80,6 +80,9 @@ def navigate(w, url):
         ex.aurora=!!document.querySelector('.aurora-container')||!!document.querySelector('.aurora-post');
         ex.toc=$$('#post-toc a').length;
         ex.codeHead=$$('.code-head').length;
+        ex.homeFeatured=!!document.querySelector('.home-featured');
+        ex.homeCards=$$('.home-article-list .art-card').length;
+        ex.homeThumbs=$$('.home-article-list .art-thumb').length;
         ex.codeAligned=Array.from($$('.post-body pre.code-lines')).every(p=>{
           const n=p.querySelector('.line-nums'),c=p.querySelector('code');
           if(!n||!c)return false;
@@ -128,6 +131,8 @@ def main():
         flags = []
         if name == "文章37(TOC)" and (v.get("toc") or 0) < 2: flags.append("TOC缺失")
         if name == "文章5(代码)" and (v.get("codeHead") or 0) < 1: flags.append("代码块增强缺失")
+        if name == "首页" and not v.get("homeFeatured"): flags.append("首页Hero缺失")
+        if name == "首页" and ((v.get("homeCards") or 0) < 5 or v.get("homeCards") != v.get("homeThumbs")): flags.append("首页文章卡片不完整")
         if name == "文章5(代码)" and not v.get("codeAligned"): flags.append("代码行号与正文错位")
         if (v.get("dslash") or 0) > 0: flags.append("双斜杠"+str(v.get("dslash")))
         if (v.get("emptyHref") or 0) > 0: flags.append("空href"+str(v.get("emptyHref")))

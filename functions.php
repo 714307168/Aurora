@@ -67,21 +67,65 @@ class Aurora
         return rtrim(Helper::options()->siteUrl, '/') . '/' . ltrim($url, '/');
     }
 
-    /** 文章首图：支持 HTML img、Markdown 图片和绝对链接。 */
-    public static function og_image($widget)
+    /** 从正文提取首图；没有图片时返回 null，不用站点 Logo 冒充封面。 */
+    public static function content_image($source)
     {
-        $text = ($widget->is('post') || $widget->is('page')) ? (string)$widget->text : '';
+        if (is_array($source)) {
+            $text = isset($source['text']) ? (string)$source['text'] : '';
+        } elseif (is_object($source)) {
+            $text = (string)$source->text;
+        } else {
+            $text = (string)$source;
+        }
         $patterns = array(
             '/<img[^>]+src=["\']([^"\']+)["\']/i',
             '/!\[[^\]]*\]\(([^\s\)]+)(?:\s+["\'][^"\']*["\'])?\)/',
             '/(https?:\/\/[^\s"\']+\.(?:jpg|jpeg|png|webp|gif))/i'
         );
         foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $text, $match)) {
-                return self::absolute_url($match[1]);
-            }
+            if (preg_match($pattern, $text, $match)) return self::absolute_url($match[1]);
         }
+        return null;
+    }
+
+    /** 文章首图：正文无图时使用主题 Logo 作为社交分享兜底。 */
+    public static function og_image($widget)
+    {
+        $image = ($widget->is('post') || $widget->is('page')) ? self::content_image($widget) : null;
+        if ($image) return $image;
         return self::absolute_url(rtrim((string)Helper::options()->themeUrl, '/') . '/assets/logo.svg');
+    }
+
+    /** 首页统计，查询失败时安全返回 0。 */
+    public static function site_stats()
+    {
+        $stats = array('posts' => 0, 'categories' => 0, 'tags' => 0);
+        try {
+            $db = Typecho_Db::get();
+            $post = $db->fetchRow($db->select('COUNT(cid) AS total')->from('table.contents')
+                ->where('type = ?', 'post')->where('status = ?', 'publish'));
+            $category = $db->fetchRow($db->select('COUNT(mid) AS total')->from('table.metas')->where('type = ?', 'category'));
+            $tag = $db->fetchRow($db->select('COUNT(mid) AS total')->from('table.metas')->where('type = ?', 'tag'));
+            $stats['posts'] = isset($post['total']) ? (int)$post['total'] : 0;
+            $stats['categories'] = isset($category['total']) ? (int)$category['total'] : 0;
+            $stats['tags'] = isset($tag['total']) ? (int)$tag['total'] : 0;
+        } catch (Exception $error) {
+            return $stats;
+        }
+        return $stats;
+    }
+
+    /** 首页 Hero 使用的最新文章。 */
+    public static function featured_post()
+    {
+        try {
+            $db = Typecho_Db::get();
+            return $db->fetchRow($db->select('cid', 'title', 'text', 'created')->from('table.contents')
+                ->where('type = ?', 'post')->where('status = ?', 'publish')
+                ->order('created', Typecho_Db::SORT_DESC)->limit(1));
+        } catch (Exception $error) {
+            return null;
+        }
     }
 
     public static function canonical($widget)

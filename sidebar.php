@@ -49,7 +49,7 @@ $renderHotPosts = function () {
 
     <div class="side-box">
         <h4 class="side-title"><i>✦</i> <?php echo Aurora::t('categories'); ?></h4>
-        <ul class="side-cats">
+        <ul class="side-cats compact-grid">
             <?php $this->widget('Widget_Metas_Category_List')->parse('<li><a href="{permalink}"><span>{name}</span><em>{count}</em></a></li>'); ?>
         </ul>
     </div>
@@ -62,7 +62,7 @@ $renderHotPosts = function () {
     <div class="side-box">
         <h4 class="side-title"><i>▣</i> <?php echo Aurora::t('tags'); ?></h4>
         <div class="side-tags">
-            <?php $this->widget('Widget_Metas_Tag_Cloud', 'sort=count&desc=1&ignoreZeroCount=1&limit=36')->to($tags2); ?>
+            <?php $this->widget('Widget_Metas_Tag_Cloud', 'sort=count&desc=1&ignoreZeroCount=1&limit=24')->to($tags2); ?>
             <?php if ($tags2->have()): while ($tags2->next()): ?>
             <?php $size = 12 + (int)min(6, $tags2->count * 0.9); $heat = min(1, 0.45 + $tags2->count * 0.07); ?>
             <a href="<?php $tags2->permalink(); ?>" style="font-size:<?php echo $size; ?>px;--tag-heat:<?php echo $heat; ?>"><?php $tags2->name(); ?></a>
@@ -70,12 +70,12 @@ $renderHotPosts = function () {
         </div>
     </div>
 
-    <div class="side-box">
-        <h4 class="side-title"><i>▣</i> <?php echo Aurora::t('archive'); ?></h4>
+    <details class="side-box side-archive-fold">
+        <summary class="side-title"><i>▣</i> <?php echo Aurora::t('archive'); ?><b>展开</b></summary>
         <ul class="side-archive">
             <?php $archiveFormat = Aurora::lang() === 'en-US' ? 'F Y' : 'Y 年 n 月'; ?>
             <?php $this->widget('Widget_Contents_Post_Date', 'type=month&format=' . urlencode($archiveFormat) . '&limit=12')->parse('<li><a href="{permalink}" rel="nofollow">{date}</a></li>'); ?>
         </ul>
-    </div>
+    </details>
 <?php endif; ?>
 </aside>
