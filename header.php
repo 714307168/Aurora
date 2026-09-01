@@ -19,7 +19,7 @@ $titleFormats = Aurora::lang() === 'en-US' ? array(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php $this->archiveTitle($titleFormats, '', ' - '); $this->options->title(); ?></title>
-    <script>(function(){try{var t=localStorage.getItem('aurora-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
+    <script>(function(){try{var v='dark-default-v1',t=localStorage.getItem('aurora-theme');if(localStorage.getItem('aurora-theme-default')!==v){t='dark';localStorage.setItem('aurora-theme',t);localStorage.setItem('aurora-theme-default',v)}if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
     <link rel="icon" href="<?php $this->options->themeUrl('assets/logo.svg'); ?>" type="image/svg+xml">
     <?php if (!$this->is('single')): ?><link rel="canonical" href="<?php echo Aurora::e($canonical); ?>"><?php endif; ?>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<?php echo Aurora::e($this->options->feedUrl); ?>">

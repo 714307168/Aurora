@@ -112,6 +112,8 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         js = text("assets/aurora.js")
         self.assertIn('data-theme="dark"', header)
         self.assertIn("localStorage.getItem('aurora-theme')", header)
+        self.assertIn("'dark-default-v1'", header)
+        self.assertIn("localStorage.setItem('aurora-theme',t)", header)
         self.assertIn('saved === "light" || saved === "dark" ? saved : "dark"', js)
         self.assertNotIn("prefers-color-scheme", js)
 
