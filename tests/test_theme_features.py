@@ -107,6 +107,14 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         self.assertIn("--text-3:#8795aa", css)
         self.assertIn("input::placeholder", css)
 
+    def test_new_visitors_default_to_dark_theme(self):
+        header = text("header.php")
+        js = text("assets/aurora.js")
+        self.assertIn('data-theme="dark"', header)
+        self.assertIn("localStorage.getItem('aurora-theme')", header)
+        self.assertIn('saved === "light" || saved === "dark" ? saved : "dark"', js)
+        self.assertNotIn("prefers-color-scheme", js)
+
     def test_release_pipeline_tests_new_code_and_fails_closed(self):
         qa = text("scripts/qa-scan.py")
         release = text("scripts/release.sh")

@@ -19,7 +19,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>if (window.hljs) hljs.highlightAll();</script>
-<script src="<?php $this->options->themeUrl('assets/aurora.js'); ?>?v=20260844"></script>
+<script src="<?php $this->options->themeUrl('assets/aurora.js'); ?>?v=20260901"></script>
 <?php $this->footer(); ?>
 
 </body>

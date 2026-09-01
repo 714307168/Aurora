@@ -203,7 +203,7 @@
     spy();
   }
 
-  // 亮/暗主题切换：localStorage 记录，默认深色（或跟随系统），点击切换
+  // 亮/暗主题切换：localStorage 记录；新访客固定默认深色，点击后记住选择
   function themeToggle() {
     var btn = document.getElementById("theme-toggle");
     if (!btn) return;
@@ -215,7 +215,7 @@
     };
     var saved = null;
     try { saved = localStorage.getItem("aurora-theme"); } catch (e) {}
-    var t = saved || (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    var t = saved === "light" || saved === "dark" ? saved : "dark";
     apply(t);
     btn.addEventListener("click", function () {
       var cur = document.documentElement.getAttribute("data-theme");
