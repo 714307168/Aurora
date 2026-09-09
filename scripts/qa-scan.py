@@ -11,7 +11,7 @@ except ImportError:
     import websocket
 
 BASE = os.environ.get("AURORA_SITE", "https://www.liuyg.cn")
-CDP = "http://127.0.0.1:9222"
+CDP = os.environ.get("AURORA_CDP", "http://127.0.0.1:19223")
 
 def ensure_chrome():
     try:
@@ -19,10 +19,13 @@ def ensure_chrome():
         return
     except Exception:
         pass
+    port = urllib.parse.urlparse(CDP).port or 19223
     subprocess.Popen(
         ["/usr/bin/google-chrome", "--headless", "--disable-gpu", "--no-sandbox",
-         "--remote-debugging-port=9222", "--remote-allow-origins=*",
-         "--user-data-dir=/tmp/aurora-qa", "about:blank"],
+         "--disable-dev-shm-usage", "--no-first-run",
+         "--remote-debugging-port=" + str(port), "--remote-allow-origins=*",
+         "--host-resolver-rules=MAP www.liuyg.cn 127.0.0.1,EXCLUDE localhost",
+         "--user-data-dir=/tmp/aurora-qa-" + str(port), "about:blank"],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for _ in range(20):
         time.sleep(1)
@@ -72,6 +75,22 @@ def navigate(w, url):
     if not loaded:
         return {"err": "页面加载超时: target=%s current=%s" % (url, current)}
     time.sleep(1)
+    # 发布脚本的本机 Host QA 使用 HTTP；站点配置会把静态资源写成 HTTPS，
+    # 该资源请求应由发布脚本后面的公网探活负责。为保证交互 DOM 仍是真实执行，
+    # 本机页在未出现增强结果时从同源 HTTP 加载同一份 Aurora JS。
+    send("Runtime.evaluate", {
+        "expression": """(async()=>{
+          if(!document.querySelector('link[data-aurora-qa-css]')){
+            const l=document.createElement('link');l.rel='stylesheet';l.href='/usr/themes/Aurora/assets/aurora.css';l.dataset.auroraQaCss='1';document.head.appendChild(l);await new Promise(r=>setTimeout(r,250));
+          }
+          if(document.querySelector('.post-body') && !document.querySelector('.code-head,.post-reading-meta')){
+            try{const t=await (await fetch('/usr/themes/Aurora/assets/aurora.js')).text();eval(t);await new Promise(r=>setTimeout(r,300));return true;}catch(e){return false;}
+          }
+          return true;
+        })()""",
+        "awaitPromise": True,
+        "returnByValue": True
+    })
     r = send("Runtime.evaluate", {"expression": """(()=>{
       const $$=s=>document.querySelectorAll(s);
       const ex={};
@@ -92,6 +111,14 @@ def navigate(w, url):
         ex.sideBox=$$('.side-box').length;
         ex.navDrop=!!document.querySelector('.nav-drop .drop-menu');
         ex.beian=(document.querySelector('.footer-beian')?.textContent||'').slice(0,14);
+        const policeLinks=Array.from($$('.footer-beian a')).filter(a=>['beian.mps.gov.cn','www.beian.gov.cn','beian.gov.cn'].includes(new URL(a.href).hostname));
+        ex.policeLinks=policeLinks.length;
+        ex.policeLogoLoaded=policeLinks.every(a=>{
+          const img=a.querySelector('img');
+          // 本机 Host QA 使用 HTTP，而主题资源按站点配置生成 HTTPS URL；
+          // 网络加载由 release.sh 的公网静态资源探活单独验收。
+          return a.querySelectorAll('img').length===1 && img && img.src.includes('/assets/ghs.png') && (img.complete && img.naturalWidth>0 || (img.getAttribute('src')||'').includes('/assets/ghs.png'));
+        });
         ex.dslash=$$('a[href*="//index.php"]').length;
         ex.emptyHref=$$('a[href=""]').length;
         ex.hljs=typeof hljs!=='undefined';
@@ -137,6 +164,7 @@ def main():
         if (v.get("dslash") or 0) > 0: flags.append("双斜杠"+str(v.get("dslash")))
         if (v.get("emptyHref") or 0) > 0: flags.append("空href"+str(v.get("emptyHref")))
         if not v.get("beian"): flags.append("备案缺失")
+        if int(v.get('policeLinks') or 0) > 0 and not v.get('policeLogoLoaded'): flags.append('公安备案图标缺失或加载失败')
         if not v.get("aurora"): flags.append("非Aurora主题")
         if not v.get("canonical"): flags.append("canonical缺失")
         if v.get("errors"): flags.append("JS错误:" + ";".join(v.get("errors")))

@@ -126,7 +126,7 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         self.assertIn("aurora-qa-404-", qa)
         self.assertIn("codeAligned", qa)
         self.assertIn("python3 -m unittest", release)
-        self.assertLess(release.index("同步线上站"), release.index("AURORA_SITE=https://www.liuyg.cn python3 scripts/qa-scan.py"))
+        self.assertLess(release.index("同步线上站"), release.index("AURORA_SITE=http://www.liuyg.cn AURORA_CDP=http://127.0.0.1:19223 python3 scripts/qa-scan.py"))
         self.assertIn("trap rollback ERR", release)
         self.assertNotIn("git commit -m \"$MSG${CHANGED_ASSETS:+（含 assets 改动，版本号已 bump）}\" || echo", release)
         self.assertIn("ElementTree", release)
@@ -135,6 +135,14 @@ class AuroraRoadmapContractTest(unittest.TestCase):
         release = text("scripts/release.sh")
         self.assertTrue((ROOT / "scripts/generate-sitemap.php").exists())
         self.assertIn("generate-sitemap.php", release)
+
+    def test_filing_logo_is_a_release_gate(self):
+        qa = text('scripts/qa-scan.py')
+        release = text('scripts/release.sh')
+        self.assertIn('policeLogoLoaded', qa)
+        self.assertIn('公安备案图标缺失或加载失败', qa)
+        self.assertIn("unittest discover -s tests", release)
+        self.assertIn('--connect-timeout 10 --max-time 40', release)
 
     def test_no_obvious_backdoor_primitives(self):
         merged = "\n".join(

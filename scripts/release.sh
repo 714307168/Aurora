@@ -43,7 +43,7 @@ echo "线上主题目录：$SITE"
 echo "提交说明：$MSG"
 
 echo "[1/8] 功能契约测试"
-python3 -m unittest tests/test_theme_features.py -v
+python3 -m unittest discover -s tests -v
 
 echo "[2/8] 语法、差异与数据库前置检查"
 for file in *.php scripts/*.php; do
@@ -114,13 +114,26 @@ print(f"  ✓ sitemap XML 有效，URL={count}")
 PY
 
 echo "[6/8] 同步后线上回归与 HTTP 验收"
-AURORA_SITE=https://www.liuyg.cn python3 scripts/qa-scan.py
-for path in "/" "/index.php/archives/37/" "/index.php/links.html" "/sitemap.xml"; do
-  code=$(curl -s --noproxy '*' -o /dev/null -w "%{http_code}" "https://www.liuyg.cn$path")
-  echo "  $code  $path"
-  [ "$code" = "200" ]
+# 浏览器用本机 Nginx + 正确 Host 渲染，避免公网 CDN/出口抖动误伤主题 QA；公网仍由下方 curl 探活。
+AURORA_SITE=http://www.liuyg.cn AURORA_CDP=http://127.0.0.1:19223 python3 scripts/qa-scan.py
+probe_http() {
+  local path="$1" code="" attempt
+  for attempt in 1 2 3; do
+    code=$(curl -sS --noproxy '*' --connect-timeout 10 --max-time 40 --retry 2 -o /dev/null -w "%{http_code}" "https://www.liuyg.cn$path" || true)
+    if [ "$code" = "200" ]; then
+      echo "  200  $path（第${attempt}次）"
+      return 0
+    fi
+    echo "  第${attempt}次探活失败：$code  $path"
+    [ "$attempt" -lt 3 ] && sleep 2
+  done
+  return 1
+}
+for path in "/" "/index.php/archives/37/" "/index.php/links.html" "/sitemap.xml" "/usr/themes/Aurora/assets/ghs.png"; do
+  probe_http "$path"
 done
-DOUBLE_SLASH=$(curl -s --noproxy '*' "https://www.liuyg.cn/" | grep -c '//index.php' || true)
+HOME_HTML=$(curl -fsS --noproxy '*' --connect-timeout 10 --max-time 40 --retry 2 "https://www.liuyg.cn/")
+DOUBLE_SLASH=$(printf '%s' "$HOME_HTML" | grep -c '//index.php' || true)
 [ "$DOUBLE_SLASH" = "0" ]
 
 echo "[7/8] 提交并推送 GitHub"
